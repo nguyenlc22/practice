@@ -1,5 +1,4 @@
-# ELIXIR BASIC
-
+# DATE 10/01/2024
 ## 1. Mix
 
 > Mix is the build tool for elixir and it will allow us to do things 
@@ -92,13 +91,13 @@ iex> [1, 2, 3] ++ [4, 5, 6]
 [1, 2, 3, 4, 5, 6]
 ```
 
-###### List subtraction
+##### List subtraction
 ```elixir
 iex> [1, true, 2, false, 3, true] -- [true, false]
 [1, 2, 3, true]
 ```
 
-###### Head / Tail
+##### Head / Tail
 > Head có thể hiểu là phần tử đầu tiên trong list
 > Tail là list các phần tử trong list trừ phần tử đầu tiên.
 > Elixir hỗ trợ **`hd`** cho head và **`tl`** cho tail
@@ -226,3 +225,121 @@ iex> [{:foo, "bar"}, {:hello, "world"}]
 - Keys are atoms.
 - Keys are ordered.
 - Keys do not have to be unique.
+
+## Pattner Matching
+
+### Match Operator
+
+> The **`=`** operator is called the match operator.
+- In Elixir used the **`=`** operator a couple times to assign variables
+- The match operator chỉ sử dụng trong một số trường hợp đơn giản, trong trường hợp
+dữ liệu phức tạp thì match operator không đáp ứng được.
+
+```elixir
+iex> {a, b, c} = {:hello, "world", 42}
+{:hello, "world", 42}
+iex> a
+:hello
+iex> b
+"world"
+```
+
+Pattern match sẽ lỗi trong trường hợp (different size)
+```elixir
+>iex {a, b, c} = {:hello, "world"}
+** (MatchError) no match of right hand side value: {:hello, "world"}
+```
+
+### Pin Operator
+>  **`^`** is syntax pin operator in Elixir
+
+
+# DATE 11/01/2024
+## If/else and unless conditions
+> Chú ý việc thay đổi giá trị một biến bên trong if/else or unless, no chỉ thay đổi trong construct, giá trị được gán ban đầu không đổi
+```elixir
+iex> x = 1
+1
+iex> if true do
+...>  x = x + 1
+...> end
+2
+iex> x
+1
+```
+
+> Trong trường hợp ta muốn thay đổi giá trị, ta phải return giá trị từ function
+```elixir
+iex> x = 1
+1
+iex> x = if true do
+...>  x + 1
+...> else
+...>  x
+...> end
+2
+```
+
+## Case
+> **`case`** allows us to compare a value against many patterns until we find a matching one:
+
+```elixir
+iex> case {1, 2, 3} do
+...>  {4, 5, 6} ->
+...>    "This clause won't match"
+...>  {1, x, 3} ->
+...>    "This clause will match and bind x to 2 in this clause"
+...>  _ ->
+...>    "This clause would match any value"
+...> end
+"This clause will match and bind x to 2 in this clause"
+```
+
+```elixir
+iex> case {1, 2, 3} do
+...>  {1, x, 3} when x > 0 ->
+...>    "Will match"
+...>  _ ->
+...>    "Would match, if guard condition were not satisfied"
+...> end
+"Will match"
+```
+
+## Cond
+> **`cond`** use to check different conditions and find the first one that does not evaluate to **`nil`** or **`false`**
+```elixir
+iex> cond do
+...>  2 + 2 == 5 ->
+...>    "This will not be true"
+...>  2 * 2 == 3 ->
+...>    "Nor this"
+...>  1 + 1 == 2 ->
+...>    "But this will"
+...> end
+"But this will"
+```
+
+## With...do...else
+> Được dùng trong trường hợp có nhiều **`case`** lồng nhau để code clean hơn
+- Nested case
+```
+case Repo.insert(changeset) do
+    {:ok, user} ->
+        case Guardian.encode_and_sign(user, :token, claims) do
+        {:ok, token, full_claims} ->
+            important_stuff(token, full_claims)
+        error ->
+            error
+    end
+
+    error ->
+        error
+end
+```
+- Used **`with...do`**
+```
+with {:ok, user} <- Repo.insert(changeset),
+    {:ok, token, full_claims} <- Guardian.encode_and_sign(user, :token, claims) do
+        important_stuff(token, full_claims)
+end
+```
