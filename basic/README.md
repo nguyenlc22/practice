@@ -1,5 +1,5 @@
 # DATE 10/01/2024
-## 1. Mix
+## Mix
 
 > Mix is the build tool for elixir and it will allow us to do things 
 - Generate new projects `mix new name-project`
