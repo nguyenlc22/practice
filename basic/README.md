@@ -69,6 +69,18 @@ iex> "Hello World"
 iex> IO.puts("Hello world")
 "Hello world"
 :ok
+
+# Concatenation string
+iex> name = "Hello"
+"Hello"
+iex> name <> " world!"
+"Hello world!"
+
+# String interpolation
+iex> name = "nguyen"
+"nguyen"
+iex> "Hello #{name}"
+"Hello nguyen"
 ```
 
 ### Collections
@@ -197,7 +209,7 @@ iex> updatedAnimal
 # %{legs: 4, name: "Max", type: "dog"}
 ```
 
-2. Sử dụng syntax (partern matching)
+2. Sử dụng syntax (pattern matching)
 
 ```elixir
 iex> %{animals | name: "Max"}
@@ -256,7 +268,7 @@ Pattern match sẽ lỗi trong trường hợp (different size)
 
 # DATE 11/01/2024
 ## If/else and unless conditions
-> Chú ý việc thay đổi giá trị một biến bên trong if/else or unless, no chỉ thay đổi trong construct, giá trị được gán ban đầu không đổi
+> Chú ý việc thay đổi giá trị một biến bên trong if/else or unless, nó chỉ thay đổi trong construct, giá trị được gán ban đầu không đổi
 ```elixir
 iex> x = 1
 1
@@ -343,3 +355,146 @@ with {:ok, user} <- Repo.insert(changeset),
         important_stuff(token, full_claims)
 end
 ```
+
+# DATE 12/01/2024
+
+## Function
+
+### Anonymous functions
+> Anonymous functions start with fn and end with end.
+
+```elixir
+iex> add = fn (a, b)-> a + b end
+iex> add.(1, 2)
+3
+```
+> Note a dot . between the variable add and parenthesis is required to invoke an anonymous functions.
+
+> Define a new anonymous function that uses the add anonymous function we have previously defined:
+```elixir
+iex> double = fn a -> add.(a, a) end
+iex> double.(5)
+10
+```
+
+### Pattern matching in anonymous functions
+
+> Pattern matching được dùng để define parameter trong fuction
+
+```elixir
+iex> handle_result = fn
+...>  {:ok, result} -> IO.puts "Handling result..."
+...>  {:ok, _} -> IO.puts "This would be never run as previous will be matched beforehand."
+...>  {:error} -> IO.puts "An error has occurred!"
+...> end
+
+iex> handle_result.({:ok, some_result})
+Handling result...
+:ok
+```
+
+### Private Function
+> Using **`defp`** to define private function, don't want other modules accessing a specific function
+```elixir
+defmodule Greeter do
+  def hello(name), do: phrase() <> name
+  defp phrase, do: "Hello, "
+end
+
+iex> Greeter.hello("Sean")
+"Hello, Sean"
+
+iex> Greeter.phrase
+** (UndefinedFunctionError) function Greeter.phrase/0 is undefined or private
+    Greeter.phrase()
+```
+
+
+### Guards
+> Dùng để check input params 
+```elixir
+defmodule Greeter do
+    def hello(names) when is_list(names) do
+        names = Enum.join(names, ", ")
+        IO.inspect(names)
+    end
+end
+
+iex> Greeter.hello(["Sean", "Steve"])
+"Sean, Steve"
+```
+- **`is_list`** is used check type parameter
+
+### Default arguments
+> Using **`argument \\ value`** for define init argument
+
+## Modules
+> Modules dùng để define các functions dưới một namespace. Trong modules cho define name, function, private function.
+
+- Example
+```
+defmodule Math do
+    # define variable
+    @greeting "Hello"
+    def sum(a, b) do
+        a + b
+    end
+end
+```
+
+## Structs
+> Structs are special maps with a defined set of keys and default values
+> Using **`defstruct`** for define structs in elixir
+
+```
+defmodule Example.User do
+  defstruct name: "Sean", roles: []
+end
+
+or
+
+defmodule User do
+  defstruct [:name, :roles]
+end
+
+using
+%User{name: :nguyen, roles: []}
+```
+
+## Composition
+> Dùng để tương tác function giữa các modules
+
+1. Alisa 
+```
+defmodule Sayings.Greetings do
+  def basic(name), do: "Hi, #{name}"
+end
+
+defmodule Example do
+  # import modules from out example module
+  alias Sayings.Greetings
+
+  def greeting(name), do: Greetings.basic(name)
+end
+
+# Without alias
+
+defmodule Example do
+  def greeting(name), do: Sayings.Greetings.basic(name)
+end
+```
+- Using **`:as`** for replace alisa modules
+```
+defmodule Example do
+  alias Sayings.Greetings, as: Hi
+
+  def print_message(name), do: Hi.basic(name)
+end
+```
+
+2. Import
+> We use **`import`** whenever we want to access functions or macros from other modules without using the fully-qualified name
+> Chỉ Sử dụng đối với các modules có các public functions, private function không thể access from external
+
+3. Require
+> Elixir provides macros as a mechanism for meta-programming (writing code that generates code). Macros are expanded at compile time.
