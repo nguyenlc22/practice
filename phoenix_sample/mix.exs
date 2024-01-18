@@ -48,7 +48,13 @@ defmodule PhoenixSample.MixProject do
       {:telemetry_poller, "~> 1.0"},
       {:gettext, "~> 0.18"},
       {:jason, "~> 1.2"},
-      {:plug_cowboy, "~> 2.5"}
+      {:plug_cowboy, "~> 2.5"},
+      {:bcrypt_elixir, "~> 3.1"},
+      {:comeonin, "~> 5.4"},
+      {:elixir_make, "~> 0.7.7"},
+      {:pbkdf2_elixir, "~> 2.0.0"},
+      {:calendar, "~> 1.0"},
+      {:joken, "~> 2.6"},
     ]
   end
 

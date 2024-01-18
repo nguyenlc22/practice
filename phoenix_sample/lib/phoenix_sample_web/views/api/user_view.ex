@@ -1,4 +1,4 @@
-defmodule PhoenixSampleWeb.User.ApiView do
+defmodule PhoenixSampleWeb.Api.UserView do
   use PhoenixSampleWeb, :view
 
   # response json

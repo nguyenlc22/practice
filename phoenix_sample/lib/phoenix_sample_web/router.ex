@@ -1,11 +1,11 @@
 defmodule PhoenixSampleWeb.Router do
   use PhoenixSampleWeb, :router
+  import Phoenix.LiveView.Router
 
   pipeline :browser do
-    plug :accepts, ["html"]
+    plug :accepts, ["html", "json"]
     plug :fetch_session
     plug :fetch_live_flash
-    plug :put_root_layout, {PhoenixSampleWeb.LayoutView, :root}
     plug :protect_from_forgery
     plug :put_secure_browser_headers
   end
@@ -15,19 +15,34 @@ defmodule PhoenixSampleWeb.Router do
   end
 
   scope "/", PhoenixSampleWeb do
-    pipe_through :browser
+    pipe_through [:browser]
 
-    get "/", PageController, :index
+    # auth page
+    get "/register", AuthController, :new_register
+    post "/register", AuthController, :register
+
+    get "/login", AuthController, :init_login
+    post "/login", AuthController, :login
+  end
+
+  scope "/admin", PhoenixSampleWeb do
+    pipe_through [:browser, PhoenixSampleWeb.SessionAuthPlug]
+
+    get "/", AdminController, :index
+  end
+
+  scope "/api", PhoenixSampleWeb do
+    pipe_through [:browser, PhoenixSampleWeb.JWTAuthPlug]
+
+    # users router
+    forward "/users", Api.RouterUser
   end
 
   # Other scopes may use custom stacks.
-  scope "/api", PhoenixSampleWeb do
-    pipe_through :api
-
-    # user router
-    forward "users", RouterUser
+  scope "/api/auth", PhoenixSampleWeb do
+    pipe_through [:api]
     # auth router
-    forward "auth", RouterAuth
+    forward "/", Api.RouterAuth
   end
 
   # Enables LiveDashboard only for development

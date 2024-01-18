@@ -1,0 +1,51 @@
+<body class="page-sign">
+  <div class="card card-sign">
+    <div class="card-header">
+      <h3 class="card-title">Sign Up</h3>
+      <p class="card-text">It's free to signup and only takes a minute.</p>
+      <%= if @msg_error do %>
+        <div class="mt-2 alert alert-danger">
+          <%= @msg_error %>
+        </div>
+      <% end %>
+    </div> <!-- card-header -->
+    <div class="card-body">
+      <%= form_for @conn, Routes.auth_path(@conn, :register), [as: :user], fn f -> %>
+        <%= for ele <- @elements do %>
+          <div class="mb-3">
+            <label class="form-label"><%= ele.title %></label>
+            <%= case ele.type do %>
+              <% :password -> %> 
+                <%= password_input f, ele.value,
+                  class: ele.class, 
+                  id: ele.id,
+                  placeholder: ele.placeholder,
+                  required: ele.required
+                %>
+                <%= if ele.required do %>
+                  <%= error_tag f, ele.value %>
+                <% end %>
+              
+              <% :text -> %> 
+                <%= text_input f, ele.value,
+                  class: ele.class, 
+                  id: ele.id,
+                  placeholder: ele.placeholder,
+                  required: ele.required
+                %>
+                <%= if ele.required do %>
+                  <%= error_tag f, ele.value %>
+                <% end %>
+            <% end %>
+          </div>
+        <% end %>
+        <%= submit "Create Account", class: "btn btn-primary btn-sign" %>
+      <% end %>
+    </div> <!-- card-body -->
+    <div class="card-footer">
+      Already have an account? <%= link("Sign In", to: Routes.auth_path(@conn, :init_login)) %>
+    </div><!-- card-footer -->
+  </div>
+</body>
+
+<script></script>

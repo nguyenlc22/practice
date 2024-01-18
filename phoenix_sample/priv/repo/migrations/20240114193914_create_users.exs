@@ -12,6 +12,6 @@ defmodule PhoenixSample.Repo.Migrations.CreateUsers do
       timestamps()
     end
 
-    # create unique_index(:users, [:email])
+    # create unique_index(:users, [:email], prefix: :phoenix_demo)
   end
 end
